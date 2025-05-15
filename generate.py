@@ -1,11 +1,18 @@
-from reportlab.pdfgen import canvas
+from fpdf import FPDF
+import os
 
-def create_pdf(app_data):
-    filename = f"static/{app_data['name']}_{app_data['cert_type']}_certificate.pdf"
-    c = canvas.Canvas(filename)
-    c.drawString(100, 750, f"Certificate Type: {app_data['cert_type']}")
-    c.drawString(100, 730, f"Name: {app_data['name']}")
-    c.drawString(100, 710, f"Income: {app_data['income']}")
-    c.drawString(100, 690, f"Status: Approved")
-    c.drawString(100, 670, "This certificate is digitally generated.")
-    c.save()
+def generate_pdf(name, cert_type, details):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=14)
+    pdf.cell(200, 10, txt=f"{cert_type} Certificate", ln=True, align='C')
+    pdf.ln(10)
+    pdf.cell(200, 10, txt=f"Name: {name}", ln=True)
+    pdf.multi_cell(200, 10, txt=f"Details: {details}")
+    
+    if not os.path.exists("certs"):
+        os.makedirs("certs")
+        
+    filename = f"certs/{name.replace(' ', '_')}_{cert_type.lower()}.pdf"
+    pdf.output(filename)
+    return filename
